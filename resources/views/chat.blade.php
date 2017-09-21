@@ -15,8 +15,8 @@
                 </div>
                 <div class="panel-footer">
                     <chat-form
-                        v-on:messagesent="addMessage"
-                        :user="{{ Auth::user() }}"
+                        v-on:messagesent="addMessageToThread"
+                        :thread-id="{{ rand(0, 10000) }}"
                     ></chat-form>
                 </div>
             </div>

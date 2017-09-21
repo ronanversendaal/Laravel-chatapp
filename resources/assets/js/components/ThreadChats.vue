@@ -1,6 +1,6 @@
 <template>
     <ul class="chat">
-        <li class="left clearfix" v-for="thread in threads">
+        <li class="left clearfix" v-for="thread, index in threads">
             <div class="chat-body clearfix">
                 <div class="header">
                     <strong class="primary-font">
@@ -8,8 +8,7 @@
                     </strong>
                 </div>
                 <p>
-                    <!-- Last message in thread -->
-                    <!-- {{ thread.message }} -->
+                    {{lastMessage(index)}}
                 </p>
             </div>
         </li>
@@ -18,6 +17,11 @@
 
 <script>
   export default {
-    props: ['threads']
+    props: ['threads'],
+    methods : {
+        lastMessage(index){
+            return this.threads[index].messages[this.threads[index].messages.length - 1].message;
+        }
+    }
   };
 </script>

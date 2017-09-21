@@ -47032,10 +47032,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['threads']
+    props: ['threads'],
+    methods: {
+        lastMessage: function lastMessage(index) {
+            return this.threads[index].messages[this.threads[index].messages.length - 1].message;
+        }
+    }
 });
 
 /***/ }),
@@ -47049,7 +47053,7 @@ var render = function() {
   return _c(
     "ul",
     { staticClass: "chat" },
-    _vm._l(_vm.threads, function(thread) {
+    _vm._l(_vm.threads, function(thread, index) {
       return _c("li", { staticClass: "left clearfix" }, [
         _c("div", { staticClass: "chat-body clearfix" }, [
           _c("div", { staticClass: "header" }, [
@@ -47062,7 +47066,13 @@ var render = function() {
             ])
           ]),
           _vm._v(" "),
-          _c("p")
+          _c("p", [
+            _vm._v(
+              "\n                " +
+                _vm._s(_vm.lastMessage(index)) +
+                "\n            "
+            )
+          ])
         ])
       ])
     })
