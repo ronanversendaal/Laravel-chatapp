@@ -28,7 +28,7 @@
                 });
 
                 this.newMessage = ''
-            }
+            },
         }    
     }
 </script>

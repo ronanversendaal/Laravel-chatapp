@@ -25,10 +25,20 @@ class ChatsController extends Controller
     /**
      * @return [type]
      */
-    public function fetchMessages()
+    public function getMessages()
     {
         // ??
         return Message::with('user')->get();
+    }
+
+    /**
+     *  Return the messages for a certain thread
+     * 
+     * @return [type]
+     */
+    public function getMessagesForThread()
+    {
+        
     }
 
     /**

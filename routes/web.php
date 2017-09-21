@@ -14,5 +14,9 @@
 Auth::routes();
 
 Route::get('/', 'ChatsController@index');
-Route::get('messages', 'ChatsController@fetchMessages');
+Route::get('messages', 'ChatsController@getMessages');
 Route::post('messages', 'ChatsController@sendMessage');
+
+Route::get('/threads', 'ThreadsController@index');
+Route::get('/threads/messages', 'ThreadsController@getThreads');
+Route::post('/threads/messages', 'ThreadsController@sendMessage');

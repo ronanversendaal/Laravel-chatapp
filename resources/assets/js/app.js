@@ -9,6 +9,7 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+Vue.component('thread-chats', require('./components/ThreadChats.vue'));
 Vue.component('chat-messages', require('./components/ChatMessages.vue'));
 Vue.component('chat-form', require('./components/ChatForm.vue'));
 
@@ -17,11 +18,14 @@ const app = new Vue({
     el: '#app',
 
     data: {
-        messages: []
+        messages: [],
+        threads: []
     },
 
     created() {
-        this.fetchMessages();
+        this.getMessages();
+
+        this.getThreads();
 
         Echo.private('chat')
           .listen('MessageSent', (e) => {
@@ -33,9 +37,15 @@ const app = new Vue({
     },
 
     methods: {
-        fetchMessages() {
+        getMessages() {
             axios.get('/messages').then(response => {
                 this.messages = response.data;
+            });
+        },
+
+        getThreads() {
+            axios.get('/threads/messages').then(response => {
+                this.threads = response.data;
             });
         },
 
@@ -43,6 +53,13 @@ const app = new Vue({
             this.messages.push(message);
 
             axios.post('/messages', message).then(response => {
+              console.log(response.data);
+            });
+        },
+        addMessageToThread(message) {
+            this.messages.push(message);
+
+            axios.post('/threads/messages', message).then(response => {
               console.log(response.data);
             });
         }

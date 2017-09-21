@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Thread;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,4 +19,9 @@ class Message extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function thread()
+    {
+        return $this->belongsTo(Thread::class);
+    }   
 }
