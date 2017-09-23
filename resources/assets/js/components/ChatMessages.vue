@@ -1,6 +1,6 @@
 <template>
     <ul class="chat">
-        <li class="left clearfix" v-for="message in messages">
+        <li class="left clearfix" v-for="message in currentMessages">
             <div class="chat-body clearfix">
                 <div class="header">
                     <strong class="primary-font">
@@ -17,6 +17,24 @@
 
 <script>
   export default {
-    props: ['messages']
+
+    data() {
+        return {
+            currentMessages : []
+        }
+    },
+
+    props: ['messages'],
+
+    created() {
+        this.eventHub.$on('messages', messages => {
+            this.setCurrentMessages(messages);
+        });
+    },
+    methods : {
+        setCurrentMessages(messages){
+            this.currentMessages = messages;
+        },
+    }
   };
 </script>

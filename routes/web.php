@@ -19,4 +19,5 @@ Route::post('messages', 'ChatsController@sendMessage');
 
 Route::get('/threads', 'ThreadsController@index');
 Route::get('/threads/messages', 'ThreadsController@getThreads');
+Route::get('/threads/{thread}/messages/', 'ChatsController@getMessagesForThread');
 Route::post('/threads/messages', 'ThreadsController@sendMessage');

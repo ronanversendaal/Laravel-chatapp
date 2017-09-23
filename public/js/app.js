@@ -892,6 +892,17 @@ Vue.component('thread-chats', __webpack_require__(39));
 Vue.component('chat-messages', __webpack_require__(42));
 Vue.component('chat-form', __webpack_require__(45));
 
+var eventHub = new Vue(); // Single event hub
+
+// Distribute to components using global mixin
+Vue.mixin({
+    data: function data() {
+        return {
+            eventHub: eventHub
+        };
+    }
+});
+
 var app = new Vue({
     el: '#app',
 
@@ -901,43 +912,41 @@ var app = new Vue({
     },
 
     created: function created() {
-        var _this = this;
+        // Move this to the ThreadChatsvue for single 
+        // this.getMessages();
 
-        this.getMessages();
+        // this.getThreads();
 
-        this.getThreads();
-
-        Echo.private('chat').listen('MessageSent', function (e) {
-            _this.messages.push({
-                message: e.message.message,
-                user: e.user
-            });
-        });
+        // Echo.private('chat')
+        //   .listen('MessageSent', (e) => {
+        //     this.messages.push({
+        //       message: e.message.message,
+        //       user: e.user
+        //     });
+        //   });
     },
 
 
     methods: {
-        getMessages: function getMessages() {
-            var _this2 = this;
+        // getMessages() {
+        //     axios.get('/messages').then(response => {
+        //         this.messages = response.data;
+        //     });
+        // },
 
-            axios.get('/messages').then(function (response) {
-                _this2.messages = response.data;
-            });
-        },
-        getThreads: function getThreads() {
-            var _this3 = this;
+        // getThreads() {
+        //     axios.get('/threads/messages').then(response => {
+        //         this.threads = response.data;
+        //     });
+        // },
 
-            axios.get('/threads/messages').then(function (response) {
-                _this3.threads = response.data;
-            });
-        },
-        addMessage: function addMessage(message) {
-            this.messages.push(message);
+        // addMessage(message) {
+        //     this.messages.push(message);
 
-            axios.post('/messages', message).then(function (response) {
-                console.log(response.data);
-            });
-        },
+        //     axios.post('/messages', message).then(response => {
+        //       console.log(response.data);
+        //     });
+        // },
         addMessageToThread: function addMessageToThread(message) {
             this.messages.push(message);
 
@@ -47034,10 +47043,80 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['threads'],
+    data: function data() {
+        return {
+            threads: [],
+            currentThread: {}
+        };
+    },
+    created: function created() {
+        this.startRoom();
+    },
+
     methods: {
+        getMessagesForThread: function getMessagesForThread(thread) {
+            var _this = this;
+
+            axios.get('/threads/' + thread.id + '/messages').then(function (response) {
+                _this.setCurrentMessages(response.data);
+            });
+        },
+        setCurrentThread: function setCurrentThread(thread) {
+            this.currentThread = thread;
+        },
+        setCurrentMessages: function setCurrentMessages(messages) {
+            this.eventHub.$emit('messages', messages);
+        },
+        loadThread: function loadThread(thread) {
+            this.setCurrentThread(thread);
+            this.getMessagesForThread(thread);
+        },
+        getThreads: function getThreads() {
+            return axios.get('/threads/messages');
+        },
+        setThreads: function setThreads(threads) {
+
+            var threads = threads;
+
+            this.threads = threads;
+
+            return new Promise(function (resolve, reject) {
+                if (threads) {
+                    resolve(threads);
+                }
+                reject();
+            });
+        },
+        startRoom: function startRoom() {
+            var _this2 = this;
+
+            this.getThreads().then(function (response) {
+                _this2.setThreads(response.data).then(function (threads) {
+
+                    // Get the last thread and load messages.
+                    _this2.setCurrentThread(_this2.threads[_this2.threads.length - 1]);
+                    _this2.getMessagesForThread(_this2.currentThread);
+
+                    // Pass the dynamic chatroom name here
+                    // @todo enter thread information to message
+                    // @todo what if we cant connect? Show a message?
+                    Echo.private('chat.' + _this2.currentThread.chatroom).listen('MessageSent', function (e) {
+                        _this2.messages.push({
+                            message: e.message.message,
+                            user: e.user
+                        });
+                    });
+                });
+            });
+        },
         lastMessage: function lastMessage(index) {
-            return this.threads[index].messages[this.threads[index].messages.length - 1].message;
+
+            var message = this.threads[index].messages[this.threads[index].messages.length - 1];
+
+            if (message) {
+                return message.message;
+            }
+            return '-';
         }
     }
 });
@@ -47054,27 +47133,38 @@ var render = function() {
     "ul",
     { staticClass: "chat" },
     _vm._l(_vm.threads, function(thread, index) {
-      return _c("li", { staticClass: "left clearfix" }, [
-        _c("div", { staticClass: "chat-body clearfix" }, [
-          _c("div", { staticClass: "header" }, [
-            _c("strong", { staticClass: "primary-font" }, [
+      return _c(
+        "li",
+        {
+          staticClass: "left clearfix",
+          on: {
+            click: function($event) {
+              _vm.loadThread(thread)
+            }
+          }
+        },
+        [
+          _c("div", { staticClass: "chat-body clearfix" }, [
+            _c("div", { staticClass: "header" }, [
+              _c("strong", { staticClass: "primary-font" }, [
+                _vm._v(
+                  "\n                    " +
+                    _vm._s(thread.subject) +
+                    "\n                "
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c("p", [
               _vm._v(
-                "\n                    " +
-                  _vm._s(thread.subject) +
-                  "\n                "
+                "\n                " +
+                  _vm._s(_vm.lastMessage(index)) +
+                  "\n            "
               )
             ])
-          ]),
-          _vm._v(" "),
-          _c("p", [
-            _vm._v(
-              "\n                " +
-                _vm._s(_vm.lastMessage(index)) +
-                "\n            "
-            )
           ])
-        ])
-      ])
+        ]
+      )
     })
   )
 }
@@ -47159,7 +47249,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['messages']
+    data: function data() {
+        return {
+            currentMessages: []
+        };
+    },
+
+
+    props: ['messages'],
+
+    created: function created() {
+        var _this = this;
+
+        this.eventHub.$on('messages', function (messages) {
+            _this.setCurrentMessages(messages);
+        });
+    },
+
+    methods: {
+        setCurrentMessages: function setCurrentMessages(messages) {
+            this.currentMessages = messages;
+        }
+    }
 });
 
 /***/ }),
@@ -47173,7 +47284,7 @@ var render = function() {
   return _c(
     "ul",
     { staticClass: "chat" },
-    _vm._l(_vm.messages, function(message) {
+    _vm._l(_vm.currentMessages, function(message) {
       return _c("li", { staticClass: "left clearfix" }, [
         _c("div", { staticClass: "chat-body clearfix" }, [
           _c("div", { staticClass: "header" }, [
@@ -47283,7 +47394,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         sendMessage: function sendMessage() {
-            this.$emit('messagesent', {
+            this.eventHub.$emit('messagesent', {
                 user: this.user,
                 message: this.newMessage
             });

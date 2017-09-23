@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageSent;
 use App\Message;
+use App\Thread;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,9 +37,9 @@ class ChatsController extends Controller
      * 
      * @return [type]
      */
-    public function getMessagesForThread()
+    public function getMessagesForThread(Thread $thread)
     {
-        
+        return Message::with('user')->whereThreadId($thread->id)->get();
     }
 
     /**

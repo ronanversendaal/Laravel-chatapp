@@ -22,13 +22,13 @@
 
         methods: {
             sendMessage() {
-                this.$emit('messagesent', {
+                this.eventHub.$emit('messagesent', {
                     user: this.user,
                     message: this.newMessage
                 });
 
                 this.newMessage = ''
-            },
+            }
         }    
     }
 </script>
