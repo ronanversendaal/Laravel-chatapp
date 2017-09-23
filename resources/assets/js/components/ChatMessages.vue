@@ -1,31 +1,24 @@
 <template>
-    <ul class="chat">
-        <li class="left clearfix" v-for="message in currentMessages">
-            <div class="chat-body clearfix">
-                <div class="header">
-                    <strong class="primary-font">
-                        {{ message.user.name }}
-                    </strong>
-                </div>
-                <p>
-                    {{ message.message }}
-                </p>
-            </div>
-        </li>
-    </ul>
+<ul class="list-unstyled">
+    <li class="clearfix" :class="{  'admin_chat' :  fromCurrentUser(message.user) }" v-for="message in currentMessages">
+        <div class="chat-body1 clearfix">
+            <span>{{message.user.name}}</span>
+            <p>{{ message.message }}</p>
+            <div class="chat_time pull-right">09:40PM</div>
+        </div>
+    </li>        
+</ul>
 </template>
 
 <script>
   export default {
+    props: ['user', 'messages'],
 
     data() {
         return {
             currentMessages : []
         }
     },
-
-    props: ['messages'],
-
     created() {
         this.eventHub.$on('messages', messages => {
             this.setCurrentMessages(messages);
@@ -41,6 +34,12 @@
         setCurrentMessages(messages){
             this.currentMessages = messages;
         },
+        fromCurrentUser: function (user) {
+            if(!user){
+                return false;
+            }
+            return user.id === this.user.id;
+        }
     }
   };
 </script>

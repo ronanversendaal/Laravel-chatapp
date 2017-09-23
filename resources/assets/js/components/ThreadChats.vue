@@ -1,15 +1,15 @@
 <template>
-    <ul class="chat">
-        <li @click="loadThread(thread)" class="left clearfix" v-for="thread, index in threads">
+    <ul class="list-unstyled">
+        <li @click="loadThread(thread)" v-for="thread, index in orderedThreads" class="left clearfix">
             <div class="chat-body clearfix">
-                <div class="header">
-                    <strong class="primary-font">
-                        {{ thread.subject }}
-                    </strong>
+                <div class="header_sec">
+                   <strong class="primary-font">{{ thread.subject }}</strong> <strong class="pull-right">
+                   09:45AM</strong>
                 </div>
-                <p>
-                    {{lastMessage(index)}}
-                </p>
+                <div class="contact_sec">
+                   <strong class="primary-font">{{lastMessage(index)}}</strong>
+                   <span class="badge pull-right">3</span>
+                </div>
             </div>
         </li>
     </ul>
@@ -22,6 +22,12 @@
         return {
             threads : [],
             currentThread : {}
+        }
+    },
+
+    computed : {
+        orderedThreads : function(){
+            return _.orderBy(this.threads, 'updated_at', 'desc');
         }
     },
 
@@ -44,7 +50,7 @@
         loadThread(thread){
             this.setCurrentThread(thread);
             this.getMessagesForThread(thread);
-
+            
             // Pass the dynamic chatroom name here
             // @todo what if we cant connect? Show a message?
             Echo.private('chat.' + this.currentThread.chatroom)

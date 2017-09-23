@@ -9,11 +9,13 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+Vue.use(require('vue-chat-scroll'))
+
 Vue.component('thread-chats', require('./components/ThreadChats.vue'));
 Vue.component('chat-messages', require('./components/ChatMessages.vue'));
 Vue.component('chat-form', require('./components/ChatForm.vue'));
 
-const eventHub = new Vue() // Single event hub
+const eventHub = new Vue() // Single event hub for emitting data across components.
 
 // Distribute to components using global mixin
 Vue.mixin({
@@ -34,8 +36,7 @@ const app = new Vue({
 
     methods: {
         addMessageToThread(message) {
-            axios.post('/threads/messages', message).then(response => {
-            });
+            axios.post('/threads/messages', message);
         }
     }
 });

@@ -870,7 +870,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(10);
-module.exports = __webpack_require__(48);
+module.exports = __webpack_require__(49);
 
 
 /***/ }),
@@ -888,11 +888,13 @@ __webpack_require__(11);
 
 window.Vue = __webpack_require__(38);
 
-Vue.component('thread-chats', __webpack_require__(39));
-Vue.component('chat-messages', __webpack_require__(42));
-Vue.component('chat-form', __webpack_require__(45));
+Vue.use(__webpack_require__(39));
 
-var eventHub = new Vue(); // Single event hub
+Vue.component('thread-chats', __webpack_require__(40));
+Vue.component('chat-messages', __webpack_require__(43));
+Vue.component('chat-form', __webpack_require__(46));
+
+var eventHub = new Vue(); // Single event hub for emitting data across components.
 
 // Distribute to components using global mixin
 Vue.mixin({
@@ -913,7 +915,7 @@ var app = new Vue({
 
     methods: {
         addMessageToThread: function addMessageToThread(message) {
-            axios.post('/threads/messages', message).then(function (response) {});
+            axios.post('/threads/messages', message);
         }
     }
 });
@@ -46937,12 +46939,77 @@ module.exports = Vue$3;
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
+(function (global, factory) {
+	 true ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global['vue-chat-scroll'] = factory());
+}(this, (function () { 'use strict';
+
+/**
+ * @name VueJS vChatScroll (vue-chat-scroll)
+ * @description Monitors an element and scrolls to the bottom if a new child is added
+ * @author Theodore Messinezis <theo@theomessin.com>
+ * @file v-chat-scroll  directive definition
+ */
+
+var scrollToBottom = function scrollToBottom(el) {
+    el.scrollTop = el.scrollHeight;
+};
+
+var vChatScroll = {
+    bind: function bind(el, binding) {
+        var timeout = void 0;
+        var scrolled = false;
+
+        el.addEventListener('scroll', function (e) {
+            if (timeout) window.clearTimeout(timeout);
+            timeout = window.setTimeout(function () {
+                scrolled = el.scrollTop + el.clientHeight + 1 < el.scrollHeight;
+            }, 200);
+        });
+
+        new MutationObserver(function (e) {
+            var config = binding.value || {};
+            var pause = config.always === false && scrolled;
+            if (pause || e[e.length - 1].addedNodes.length != 1) return;
+            scrollToBottom(el);
+        }).observe(el, { childList: true, subtree: true });
+    },
+    inserted: scrollToBottom
+};
+
+/**
+ * @name VueJS vChatScroll (vue-chat-scroll)
+ * @description Monitors an element and scrolls to the bottom if a new child is added
+ * @author Theodore Messinezis <theo@theomessin.com>
+ * @file vue-chat-scroll plugin definition
+ */
+
+var VueChatScroll = {
+    install: function install(Vue, options) {
+        Vue.directive('chat-scroll', vChatScroll);
+    }
+};
+
+if (typeof window !== 'undefined' && window.Vue) {
+    window.Vue.use(VueChatScroll);
+}
+
+return VueChatScroll;
+
+})));
+
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(40)
+var __vue_script__ = __webpack_require__(41)
 /* template */
-var __vue_template__ = __webpack_require__(41)
+var __vue_template__ = __webpack_require__(42)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -46980,7 +47047,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47010,6 +47077,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             currentThread: {}
         };
     },
+
+
+    computed: {
+        orderedThreads: function orderedThreads() {
+            return _.orderBy(this.threads, 'updated_at', 'desc');
+        }
+    },
+
     created: function created() {
         this.startRoom();
     },
@@ -47081,7 +47156,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47090,8 +47165,8 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "ul",
-    { staticClass: "chat" },
-    _vm._l(_vm.threads, function(thread, index) {
+    { staticClass: "list-unstyled" },
+    _vm._l(_vm.orderedThreads, function(thread, index) {
       return _c(
         "li",
         {
@@ -47104,22 +47179,22 @@ var render = function() {
         },
         [
           _c("div", { staticClass: "chat-body clearfix" }, [
-            _c("div", { staticClass: "header" }, [
+            _c("div", { staticClass: "header_sec" }, [
               _c("strong", { staticClass: "primary-font" }, [
-                _vm._v(
-                  "\n                    " +
-                    _vm._s(thread.subject) +
-                    "\n                "
-                )
+                _vm._v(_vm._s(thread.subject))
+              ]),
+              _vm._v(" "),
+              _c("strong", { staticClass: "pull-right" }, [
+                _vm._v("\n               09:45AM")
               ])
             ]),
             _vm._v(" "),
-            _c("p", [
-              _vm._v(
-                "\n                " +
-                  _vm._s(_vm.lastMessage(index)) +
-                  "\n            "
-              )
+            _c("div", { staticClass: "contact_sec" }, [
+              _c("strong", { staticClass: "primary-font" }, [
+                _vm._v(_vm._s(_vm.lastMessage(index)))
+              ]),
+              _vm._v(" "),
+              _c("span", { staticClass: "badge pull-right" }, [_vm._v("3")])
             ])
           ])
         ]
@@ -47138,15 +47213,15 @@ if (false) {
 }
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(43)
+var __vue_script__ = __webpack_require__(44)
 /* template */
-var __vue_template__ = __webpack_require__(44)
+var __vue_template__ = __webpack_require__(45)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -47184,7 +47259,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47201,22 +47276,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['user', 'messages'],
+
     data: function data() {
         return {
             currentMessages: []
         };
     },
-
-
-    props: ['messages'],
-
     created: function created() {
         var _this = this;
 
@@ -47234,12 +47302,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         setCurrentMessages: function setCurrentMessages(messages) {
             this.currentMessages = messages;
+        },
+
+        fromCurrentUser: function fromCurrentUser(user) {
+            if (!user) {
+                return false;
+            }
+            return user.id === this.user.id;
         }
     }
 });
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47248,27 +47323,26 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "ul",
-    { staticClass: "chat" },
+    { staticClass: "list-unstyled" },
     _vm._l(_vm.currentMessages, function(message) {
-      return _c("li", { staticClass: "left clearfix" }, [
-        _c("div", { staticClass: "chat-body clearfix" }, [
-          _c("div", { staticClass: "header" }, [
-            _c("strong", { staticClass: "primary-font" }, [
-              _vm._v(
-                "\n                    " +
-                  _vm._s(message.user.name) +
-                  "\n                "
-              )
+      return _c(
+        "li",
+        {
+          staticClass: "clearfix",
+          class: { admin_chat: _vm.fromCurrentUser(message.user) }
+        },
+        [
+          _c("div", { staticClass: "chat-body1 clearfix" }, [
+            _c("span", [_vm._v(_vm._s(message.user.name))]),
+            _vm._v(" "),
+            _c("p", [_vm._v(_vm._s(message.message))]),
+            _vm._v(" "),
+            _c("div", { staticClass: "chat_time pull-right" }, [
+              _vm._v("09:40PM")
             ])
-          ]),
-          _vm._v(" "),
-          _c("p", [
-            _vm._v(
-              "\n                " + _vm._s(message.message) + "\n            "
-            )
           ])
-        ])
-      ])
+        ]
+      )
     })
   )
 }
@@ -47283,15 +47357,15 @@ if (false) {
 }
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(46)
+var __vue_script__ = __webpack_require__(47)
 /* template */
-var __vue_template__ = __webpack_require__(47)
+var __vue_template__ = __webpack_require__(48)
 /* styles */
 var __vue_styles__ = null
 /* scopeId */
@@ -47329,12 +47403,11 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
 //
 //
 //
@@ -47366,31 +47439,38 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
     methods: {
+        enterHandler: function enterHandler(e) {
+            if (e.keyCode === 13 && !e.shiftKey) {
+                this.sendMessageToThread();
+            }
+        },
         setCurrentThread: function setCurrentThread(thread) {
             this.thread = thread;
         },
         sendMessageToThread: function sendMessageToThread() {
-            this.$emit('messagesent', {
-                thread: this.thread.id,
-                user: this.user,
-                message: this.newMessage
-            });
-
-            this.newMessage = '';
+            // Checks if the first characters are not linebreaks.
+            if (this.newMessage.match(/[0-9a-zA-Z]+$/gm)) {
+                this.$emit('messagesent', {
+                    thread: this.thread.id,
+                    user: this.user,
+                    message: this.newMessage
+                });
+                this.newMessage = '';
+            }
         }
     }
 });
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "input-group" }, [
-    _c("input", {
+  return _c("div", { staticClass: "message_write" }, [
+    _c("textarea", {
       directives: [
         {
           name: "model",
@@ -47399,21 +47479,11 @@ var render = function() {
           expression: "newMessage"
         }
       ],
-      staticClass: "form-control input-sm",
-      attrs: {
-        id: "btn-input",
-        type: "text",
-        name: "message",
-        placeholder: "Type your message here..."
-      },
+      staticClass: "form-control",
+      attrs: { placeholder: "type a message" },
       domProps: { value: _vm.newMessage },
       on: {
-        keyup: function($event) {
-          if (!("button" in $event) && _vm._k($event.keyCode, "enter", 13)) {
-            return null
-          }
-          _vm.sendMessageToThread($event)
-        },
+        keyup: _vm.enterHandler,
         input: function($event) {
           if ($event.target.composing) {
             return
@@ -47423,20 +47493,41 @@ var render = function() {
       }
     }),
     _vm._v(" "),
-    _c("span", { staticClass: "input-group-btn" }, [
+    _c("div", { staticClass: "clearfix" }),
+    _vm._v(" "),
+    _c("div", { staticClass: "chat_bottom" }, [
+      _vm._m(0),
+      _vm._v(" "),
       _c(
-        "button",
+        "a",
         {
-          staticClass: "btn btn-primary btn-sm",
-          attrs: { id: "btn-chat" },
+          staticClass: "pull-right btn btn-success",
+          attrs: { href: "#" },
           on: { click: _vm.sendMessageToThread }
         },
-        [_vm._v("\n            Send\n        ")]
+        [_vm._v("Send")]
       )
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      { staticClass: "pull-left upload_btn", attrs: { href: "#" } },
+      [
+        _c("i", {
+          staticClass: "fa fa-cloud-upload",
+          attrs: { "aria-hidden": "true" }
+        }),
+        _vm._v("Add Files")
+      ]
+    )
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -47447,7 +47538,7 @@ if (false) {
 }
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

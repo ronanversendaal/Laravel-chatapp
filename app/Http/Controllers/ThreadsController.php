@@ -47,7 +47,9 @@ class ThreadsController extends Controller
             ]);
 
             // Broadcast the message
-            broadcast(new MessageSentToThread($user, $message, $thread))->toOthers();
+            broadcast(new MessageSentToThread($user, $message, $thread));
+
+            $thread->touch();
 
             return ['status' => 'Message sent!'];
         } catch(Exception $e){
