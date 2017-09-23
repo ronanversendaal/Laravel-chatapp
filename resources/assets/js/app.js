@@ -32,46 +32,9 @@ const app = new Vue({
         threads: []
     },
 
-    created() {
-        // Move this to the ThreadChatsvue for single 
-        // this.getMessages();
-
-        // this.getThreads();
-
-        // Echo.private('chat')
-        //   .listen('MessageSent', (e) => {
-        //     this.messages.push({
-        //       message: e.message.message,
-        //       user: e.user
-        //     });
-        //   });
-    },
-
     methods: {
-        // getMessages() {
-        //     axios.get('/messages').then(response => {
-        //         this.messages = response.data;
-        //     });
-        // },
-
-        // getThreads() {
-        //     axios.get('/threads/messages').then(response => {
-        //         this.threads = response.data;
-        //     });
-        // },
-
-        // addMessage(message) {
-        //     this.messages.push(message);
-
-        //     axios.post('/messages', message).then(response => {
-        //       console.log(response.data);
-        //     });
-        // },
         addMessageToThread(message) {
-            this.messages.push(message);
-
             axios.post('/threads/messages', message).then(response => {
-              console.log(response.data);
             });
         }
     }

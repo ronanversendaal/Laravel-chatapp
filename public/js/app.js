@@ -911,48 +911,9 @@ var app = new Vue({
         threads: []
     },
 
-    created: function created() {
-        // Move this to the ThreadChatsvue for single 
-        // this.getMessages();
-
-        // this.getThreads();
-
-        // Echo.private('chat')
-        //   .listen('MessageSent', (e) => {
-        //     this.messages.push({
-        //       message: e.message.message,
-        //       user: e.user
-        //     });
-        //   });
-    },
-
-
     methods: {
-        // getMessages() {
-        //     axios.get('/messages').then(response => {
-        //         this.messages = response.data;
-        //     });
-        // },
-
-        // getThreads() {
-        //     axios.get('/threads/messages').then(response => {
-        //         this.threads = response.data;
-        //     });
-        // },
-
-        // addMessage(message) {
-        //     this.messages.push(message);
-
-        //     axios.post('/messages', message).then(response => {
-        //       console.log(response.data);
-        //     });
-        // },
         addMessageToThread: function addMessageToThread(message) {
-            this.messages.push(message);
-
-            axios.post('/threads/messages', message).then(function (response) {
-                console.log(response.data);
-            });
+            axios.post('/threads/messages', message).then(function (response) {});
         }
     }
 });
@@ -47063,13 +47024,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         setCurrentThread: function setCurrentThread(thread) {
             this.currentThread = thread;
+            this.eventHub.$emit('switch-thread', thread);
         },
         setCurrentMessages: function setCurrentMessages(messages) {
             this.eventHub.$emit('messages', messages);
         },
         loadThread: function loadThread(thread) {
+            var _this2 = this;
+
             this.setCurrentThread(thread);
             this.getMessagesForThread(thread);
+
+            // Pass the dynamic chatroom name here
+            // @todo what if we cant connect? Show a message?
+            Echo.private('chat.' + this.currentThread.chatroom).listen('MessageSentToThread', function (e) {
+                _this2.eventHub.$emit('message-add', e);
+            });
         },
         getThreads: function getThreads() {
             return axios.get('/threads/messages');
@@ -47088,24 +47058,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         startRoom: function startRoom() {
-            var _this2 = this;
+            var _this3 = this;
 
             this.getThreads().then(function (response) {
-                _this2.setThreads(response.data).then(function (threads) {
+                _this3.setThreads(response.data).then(function (threads) {
 
                     // Get the last thread and load messages.
-                    _this2.setCurrentThread(_this2.threads[_this2.threads.length - 1]);
-                    _this2.getMessagesForThread(_this2.currentThread);
-
-                    // Pass the dynamic chatroom name here
-                    // @todo enter thread information to message
-                    // @todo what if we cant connect? Show a message?
-                    Echo.private('chat.' + _this2.currentThread.chatroom).listen('MessageSent', function (e) {
-                        _this2.messages.push({
-                            message: e.message.message,
-                            user: e.user
-                        });
-                    });
+                    _this3.loadThread(_this3.threads[_this3.threads.length - 1]);
                 });
             });
         },
@@ -47264,6 +47223,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.eventHub.$on('messages', function (messages) {
             _this.setCurrentMessages(messages);
         });
+        this.eventHub.$on('message-add', function (e) {
+            _this.currentMessages.push({
+                message: e.message.message,
+                user: e.user
+            });
+        });
     },
 
     methods: {
@@ -47387,14 +47352,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     data: function data() {
         return {
+            thread: {},
             newMessage: ''
         };
+    },
+    created: function created() {
+        var _this = this;
+
+        this.eventHub.$on('switch-thread', function (thread) {
+            _this.setCurrentThread(thread);
+        });
     },
 
 
     methods: {
-        sendMessage: function sendMessage() {
-            this.eventHub.$emit('messagesent', {
+        setCurrentThread: function setCurrentThread(thread) {
+            this.thread = thread;
+        },
+        sendMessageToThread: function sendMessageToThread() {
+            this.$emit('messagesent', {
+                thread: this.thread.id,
                 user: this.user,
                 message: this.newMessage
             });
@@ -47435,7 +47412,7 @@ var render = function() {
           if (!("button" in $event) && _vm._k($event.keyCode, "enter", 13)) {
             return null
           }
-          _vm.sendMessage($event)
+          _vm.sendMessageToThread($event)
         },
         input: function($event) {
           if ($event.target.composing) {
@@ -47452,7 +47429,7 @@ var render = function() {
         {
           staticClass: "btn btn-primary btn-sm",
           attrs: { id: "btn-chat" },
-          on: { click: _vm.sendMessage }
+          on: { click: _vm.sendMessageToThread }
         },
         [_vm._v("\n            Send\n        ")]
       )

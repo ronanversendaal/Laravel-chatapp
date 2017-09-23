@@ -30,6 +30,12 @@
         this.eventHub.$on('messages', messages => {
             this.setCurrentMessages(messages);
         });
+        this.eventHub.$on('message-add', e => {
+            this.currentMessages.push({
+              message: e.message.message,
+              user: e.user
+            });
+        })
     },
     methods : {
         setCurrentMessages(messages){

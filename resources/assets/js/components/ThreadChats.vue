@@ -36,6 +36,7 @@
         },
         setCurrentThread(thread){
             this.currentThread = thread;
+            this.eventHub.$emit('switch-thread', thread);
         },
         setCurrentMessages(messages){
             this.eventHub.$emit('messages', messages);
@@ -43,6 +44,13 @@
         loadThread(thread){
             this.setCurrentThread(thread);
             this.getMessagesForThread(thread);
+
+            // Pass the dynamic chatroom name here
+            // @todo what if we cant connect? Show a message?
+            Echo.private('chat.' + this.currentThread.chatroom)
+                .listen('MessageSentToThread', (e) => {
+                    this.eventHub.$emit('message-add', e);
+                });
         },
         getThreads() {
             return axios.get('/threads/messages');
@@ -65,19 +73,7 @@
                 this.setThreads(response.data).then(threads => {
 
                     // Get the last thread and load messages.
-                    this.setCurrentThread(this.threads[this.threads.length - 1]);
-                    this.getMessagesForThread(this.currentThread);
-
-                    // Pass the dynamic chatroom name here
-                    // @todo enter thread information to message
-                    // @todo what if we cant connect? Show a message?
-                    Echo.private('chat.' + this.currentThread.chatroom)
-                        .listen('MessageSent', (e) => {
-                            this.messages.push({
-                              message: e.message.message,
-                              user: e.user
-                            });
-                        });
+                    this.loadThread(this.threads[this.threads.length - 1]);
                 });
             });
         },

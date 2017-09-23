@@ -41,22 +41,4 @@ class ChatsController extends Controller
     {
         return Message::with('user')->whereThreadId($thread->id)->get();
     }
-
-    /**
-     * @param  Request $request
-     * @return Response
-     */
-    public function sendMessage(Request $request)
-    {
-        $user = Auth::user();
-
-        $message = $user->messages()->create([
-            'message' => $request->input('message')
-        ]);
-
-        // Broadcast the message
-        broadcast(new MessageSent($user, $message))->toOthers();
-
-        return ['status' => 'Message sent!'];
-    }   
 }
