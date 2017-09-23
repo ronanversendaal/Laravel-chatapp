@@ -47449,7 +47449,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         sendMessageToThread: function sendMessageToThread() {
             // Checks if the first characters are not linebreaks.
-            if (this.newMessage.match(/[0-9a-zA-Z]+$/gm)) {
+            if (this.newMessage.match(/[a-zA-Z0-9!@#$&()\\-`.+,/\"]+$/gm)) {
                 this.$emit('messagesent', {
                     thread: this.thread.id,
                     user: this.user,
