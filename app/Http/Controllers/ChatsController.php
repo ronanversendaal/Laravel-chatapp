@@ -39,6 +39,6 @@ class ChatsController extends Controller
      */
     public function getMessagesForThread(Thread $thread)
     {
-        return Message::with('user')->whereThreadId($thread->id)->get();
+        return Message::with(['user', 'thread'])->whereThreadId($thread->id)->get();
     }
 }

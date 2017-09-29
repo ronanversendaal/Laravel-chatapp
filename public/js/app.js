@@ -47069,6 +47069,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -47103,6 +47108,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         setCurrentMessages: function setCurrentMessages(messages) {
             this.eventHub.$emit('messages', messages);
+        },
+        getUserInitials: function getUserInitials(thread) {
+            var names = thread.name.split(' '),
+                initials = names[0].substring(0, 1).toUpperCase();
+
+            if (names.length > 1) {
+                initials += names[names.length - 1].substring(0, 1).toUpperCase();
+            }
+            return initials;
         },
         loadThread: function loadThread(thread) {
             var _this2 = this;
@@ -47178,15 +47192,21 @@ var render = function() {
           }
         },
         [
+          _c("span", { staticClass: "chat-img1" }, [
+            _c("div", { staticClass: "circle" }, [
+              _c("div", { staticClass: "initials" }, [
+                _vm._v(_vm._s(_vm.getUserInitials(thread)))
+              ])
+            ])
+          ]),
+          _vm._v(" "),
           _c("div", { staticClass: "chat-body clearfix" }, [
             _c("div", { staticClass: "header_sec" }, [
               _c("strong", { staticClass: "primary-font" }, [
                 _vm._v(_vm._s(thread.subject))
               ]),
               _vm._v(" "),
-              _c("strong", { staticClass: "pull-right" }, [
-                _vm._v("\n               09:45AM")
-              ])
+              _c("strong", { staticClass: "pull-right" }, [_vm._v("09:45AM")])
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "contact_sec" }, [
@@ -47276,13 +47296,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['user', 'messages'],
 
     data: function data() {
         return {
-            currentMessages: []
+            currentMessages: [],
+            currentThread: {}
         };
     },
     created: function created() {
@@ -47297,11 +47322,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 user: e.user
             });
         });
+        this.eventHub.$on('switch-thread', function (thread) {
+            _this.currentThread = thread;
+        });
     },
 
     methods: {
         setCurrentMessages: function setCurrentMessages(messages) {
             this.currentMessages = messages;
+        },
+        getUserInitials: function getUserInitials(thread) {
+            var names = thread.name.split(' '),
+                initials = names[0].substring(0, 1).toUpperCase();
+
+            if (names.length > 1) {
+                initials += names[names.length - 1].substring(0, 1).toUpperCase();
+            }
+            return initials;
         },
 
         fromCurrentUser: function fromCurrentUser(user) {
@@ -47332,9 +47369,15 @@ var render = function() {
           class: { admin_chat: _vm.fromCurrentUser(message.user) }
         },
         [
+          _c("span", { staticClass: "chat-img1" }, [
+            _c("div", { staticClass: "circle" }, [
+              _c("div", { staticClass: "initials" }, [
+                _vm._v(_vm._s(_vm.getUserInitials(message.user)))
+              ])
+            ])
+          ]),
+          _vm._v(" "),
           _c("div", { staticClass: "chat-body1 clearfix" }, [
-            _c("span", [_vm._v(_vm._s(message.user.name))]),
-            _vm._v(" "),
             _c("p", [_vm._v(_vm._s(message.message))]),
             _vm._v(" "),
             _c("div", { staticClass: "chat_time pull-right" }, [

@@ -32,4 +32,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Message::class);
     }
+
+    public function isAdmin()
+    {
+        return (bool) $this->admin;        
+    }
 }

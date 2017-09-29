@@ -54,7 +54,15 @@
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
                   <li><a href="#">Action</a></li>
                   <li><a href="#">Profile</a></li>
-                  <li><a href="#">Logout</a></li>
+                  <li><a href="{{ url('/logout') }}"
+                        onclick="event.preventDefault();
+                                 document.getElementById('logout-form').submit();">
+                        Logout
+                    </a>
+                    </li>
+                  <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+                    {{ csrf_field() }}
+                </form>
                 </ul>
              </div>
           </div>

@@ -1,10 +1,15 @@
 <template>
     <ul class="list-unstyled">
         <li @click="loadThread(thread)" v-for="thread, index in orderedThreads" class="left clearfix">
+
+            <span class="chat-img1">
+                <div class="circle">
+                    <div class="initials">{{getUserInitials(thread)}}</div>
+                </div>
+            </span>
             <div class="chat-body clearfix">
                 <div class="header_sec">
-                   <strong class="primary-font">{{ thread.subject }}</strong> <strong class="pull-right">
-                   09:45AM</strong>
+                    <strong class="primary-font">{{ thread.subject }}</strong> <strong class="pull-right">09:45AM</strong>
                 </div>
                 <div class="contact_sec">
                    <strong class="primary-font">{{lastMessage(index)}}</strong>
@@ -47,10 +52,19 @@
         setCurrentMessages(messages){
             this.eventHub.$emit('messages', messages);
         },
+        getUserInitials(thread){
+            var names = thread.name.split(' '),
+                initials = names[0].substring(0, 1).toUpperCase();
+            
+            if (names.length > 1) {
+                initials += names[names.length - 1].substring(0, 1).toUpperCase();
+            }
+            return initials;
+        },
         loadThread(thread){
             this.setCurrentThread(thread);
             this.getMessagesForThread(thread);
-            
+
             // Pass the dynamic chatroom name here
             // @todo what if we cant connect? Show a message?
             Echo.private('chat.' + this.currentThread.chatroom)

@@ -16,6 +16,26 @@
     <!-- resources/views/layouts/app.blade.php -->
 
     <style>
+    :root {
+  --avatar-size: 48px;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin: 0;
+}
        #custom-search-input {
   background: #e8e6e7 none repeat scroll 0 0;
   margin: 0;
@@ -93,6 +113,7 @@
    .member_list .chat-body {
    margin-left: 47px;
    margin-top: 0;
+   margin-left: calc(var(--avatar-size) + 3%);
    }
    .top_nav {
    overflow: visible;
@@ -166,6 +187,7 @@
     overflow-y: auto;
     width: 100%;
     height: 80vh;
+    min-width: 70vw;
 }
 .chat_area li {
   padding: 14px 14px 0;
@@ -179,11 +201,15 @@
 }
 .chat-body1 p {
   background: #fbf9fa none repeat scroll 0 0;
-  padding: 10px;
+  padding: 14px 10px;
+  margin-left: calc(var(--avatar-size) + 1%) ;
+}
+
+.chat_area li.admin_chat .chat-img1 {
+    float: right;
 }
 .chat_area .admin_chat .chat-body1 {
-  margin-right: 0;
-  margin-left: 50px;
+  margin-right: calc(var(--avatar-size) + 1%);
 }
 
 .chat_area li:last-child {
@@ -216,6 +242,25 @@
   background: #428bca none repeat scroll 0 0;
   color: #fff;
   cursor:pointer;
+}
+
+
+.circle {
+  background-color: #777;
+  border-radius: 50%;
+  height: var(--avatar-size);
+  text-align: center;
+  float: left;
+  width: var(--avatar-size);
+}
+
+.initials {
+  color: #ccc;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: calc(var(--avatar-size) / 2); /* 50% of parent */
+  line-height: 1;
+  position: relative;
+  top: calc(var(--avatar-size) / 4); /* 25% of parent */
 }
     </style>
 
