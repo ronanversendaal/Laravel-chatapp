@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\MessageSentToThread;
+use App\Http\Requests\ThreadCreateRequest;
 use App\Thread;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +12,7 @@ class ThreadsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth-admin');       
+        $this->middleware('auth-admin')->except(['store', 'show']);
     }
 
     /**
@@ -29,6 +30,41 @@ class ThreadsController extends Controller
     public function getThreads()
     {
         return Thread::with('messages')->get();        
+    }
+
+    /**
+     * @param  Thread
+     * @return Response
+     */
+    public function show(Thread $thread)
+    {
+
+        return view('chat', ['thread' => $thread, 'messages' => $thread->messages]);
+    }
+
+    /**
+     * @param  ThreadCreateRequest
+     * @return [type]
+     */
+    public function store(Request $request)
+    {
+        $chatroom = str_slug($request->input('emailaddress').'-'.$request->input('name').'-'.$request->input('subject'), '-');
+
+        $thread  = array_merge(['chatroom' => $chatroom], $request->only([
+            'subject', 'name', 'emailaddress'
+        ]));
+
+        try{
+            $thread = Thread::create($thread);
+
+            return redirect()->route('thread.show', $thread);
+        } catch (\Exception $e){
+            // @todo If room already exists we should do something.
+            
+            return redirect('/');
+        }
+
+
     }
     /**
      * @param  Request $request

@@ -5,3 +5,4 @@
  X - Create multiple channels for each user/guest.
  X - Create overview of threads and their messages.
  - Create chat for public users.
+ - Create functionality for public chat ( No authentication )

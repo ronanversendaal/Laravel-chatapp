@@ -47159,7 +47159,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         lastMessage: function lastMessage(index) {
 
-            var message = this.threads[index].messages[this.threads[index].messages.length - 1];
+            var message = this.orderedThreads[index].messages[this.orderedThreads[index].messages.length - 1];
 
             if (message) {
                 return message.message;

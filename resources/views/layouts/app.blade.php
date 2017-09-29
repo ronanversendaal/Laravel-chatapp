@@ -229,7 +229,8 @@ body {
     /*overflow-x: hidden;*/
     overflow-y: auto;
     width: 100%;
-    height: 80vh;
+    height: 65vh;
+    max-height: 65vh;
     min-width: 75vw;
 }
 
@@ -318,7 +319,24 @@ body {
   position: relative;
   top: calc(var(--avatar-size) / 4); /* 25% of parent */
 }
-    </style>
+
+
+#create-chat .chat-img1{
+    width: 96px;
+    margin: 0 auto 10px;
+    display: block;
+}
+#create-chat .chat_label{
+    min-width: 100%;
+    display: block;
+    text-align: center;
+}
+#create-chat .circle{
+    float: none; 
+    margin: calc(var(--avatar-size) / 4) auto  calc(var(--avatar-size) /2);
+}
+
+</style>
 
 </head>
 <body>
