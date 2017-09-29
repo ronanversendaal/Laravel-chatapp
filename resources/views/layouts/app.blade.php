@@ -18,6 +18,8 @@
     <style>
     :root {
   --avatar-size: 48px;
+  --new_message_head : 60px;
+  --chat_area : 13vh;
 }
 
 html, body {
@@ -36,6 +38,31 @@ body {
   justify-content: center;
   margin: 0;
 }
+
+.panel-heading {
+    padding: 5px 15px;
+}
+
+.panel-footer {
+    padding: 1px 15px;
+    color: #A0A0A0;
+}
+
+.profile-img {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 10px;
+    display: block;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+
+#app{
+    position: absolute;
+    top: 0;
+}
+
        #custom-search-input {
   background: #e8e6e7 none repeat scroll 0 0;
   margin: 0;
@@ -138,12 +165,23 @@ body {
    .member_list li:last-child {
    border-bottom:none;
    }
+
+   @media(max-device-width: 768px){
+    .member_list {
+        overflow-x: hidden;
+        overflow-y: auto;
+       }
+   }
+
    .member_list {
-   min-height: 380px;
+   min-height: inherit;
     overflow-x: hidden;
     overflow-y: auto;
-    height: 90vh;
+    height: inherit;
    }
+
+   
+
    .sub_menu_ {
   background: #e8e6e7 none repeat scroll 0 0;
   left: 100%;
@@ -175,20 +213,35 @@ body {
   font-size: 13px;
   font-weight: 600;
   padding: 18px 10px;
+  min-width: 75vw;
   width: 100%;
+  height : var(--new_message_head);
 }
 .message_section {
   border: 1px solid #dddddd;
+      position: relative;
+    bottom: 0;
+    height: 100vh;
 }
 .chat_area {
       float: left;
     min-height: 300px;
-    overflow-x: hidden;
+    /*overflow-x: hidden;*/
     overflow-y: auto;
     width: 100%;
     height: 80vh;
-    min-width: 70vw;
+    min-width: 75vw;
 }
+
+.public .chat_area{
+    min-width: 100%;
+    min-height: auto;
+}
+
+.main_section.public{
+    min-width: 100vw;
+}
+
 .chat_area li {
   padding: 14px 14px 0;
 }
@@ -219,7 +272,10 @@ body {
   background: #f5f3f3 none repeat scroll 0 0;
   float: left;
   padding: 15px;
-  width: 100%;
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    height: auto;
 }
 
 .message_write textarea.form-control {

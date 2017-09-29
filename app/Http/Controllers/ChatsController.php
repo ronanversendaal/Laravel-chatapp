@@ -10,17 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatsController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');       
-    }
-
     /**
      * @return Response
      */
     public function index()
     {
-        return view('chat');
+        return view('create');
     }
 
     /**
