@@ -1,6 +1,6 @@
 <template>
 <ul class="list-unstyled">
-    <li class="clearfix" :class="{  'admin_chat' :  fromCurrentUser(message.user) }" v-for="message in currentMessages">
+    <li class="clearfix" :class="isUser(message.user)" v-for="message in currentMessages">
         <span class="chat-img1">
             <div class="circle">
                 <div class="initials">{{getUserInitials(message.user)}}</div>
@@ -8,7 +8,7 @@
         </span>
         <div class="chat-body1 clearfix">
             <p>{{ message.message }}</p>
-            <div class="chat_time pull-right">09:40PM</div>
+            <div class="chat_time pull-right">{{ message.created_at }}</div>
         </div>
     </li>        
 </ul>
@@ -24,6 +24,7 @@
             currentThread : {}
         }
     },
+
     created() {
         this.eventHub.$on('messages', messages => {
             this.setCurrentMessages(messages);
@@ -39,10 +40,22 @@
         });
     },
     methods : {
+
+        isUser : function(user){
+            if(user){
+                return 'admin_chat';
+            } else {
+                return 'client_chat';
+            }
+        },
         setCurrentMessages(messages){
             this.currentMessages = messages;
         },
         getUserInitials(thread){
+            console.log(thread);
+            if(!thread){
+                return "?";
+            }
             var names = thread.name.split(' '),
                 initials = names[0].substring(0, 1).toUpperCase();
             

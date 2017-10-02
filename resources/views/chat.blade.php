@@ -6,9 +6,8 @@
 
 <div class="main_section">
       <div class="chat_container">
-        <div class="row">
-            <div class="col-sm-12 message_section">
-                 <div class="row">
+        <div class="col-sm-12 message_section">
+            <div class="row">
                     <div class="new_message_head">
                        <div class="pull-left">
                           <button><i class="fa fa-plus-square-o" aria-hidden="true"></i> New Message</button>
@@ -34,17 +33,18 @@
                          </div>
                       </div>
                  </div><!--new_message_head-->
-                 
+
+
+                 <thread-chats :display="false" :thread="{{$thread}}"></thread-chats>
+
                  <div class="chat_area" v-chat-scroll="{always: false}">
-                    <chat-messages :messages="messages"></chat-messages>
+                    <chat-messages :messages="{{ $messages }}"></chat-messages>
                  </div><!--chat_area-->
-                    <chat-form
+                    <chat-form :thread="{{$thread}}"
                         v-on:messagesent="addMessageToThread"
                     ></chat-form>
                  </div> <!--message_section-->
-              </div>
             </div>
-        </div>
     </div>
 </div>
 @endsection

@@ -12,10 +12,10 @@
 */
 
 Broadcast::channel('chat', function ($user) {
-  return Auth::check();
+    return Auth::check();
 });
 
 // Expect the dynamic chatroom name here, and create thread
 Broadcast::channel('chat.{chatroom}', function ($user, $chatroom) {
-  return true;
+    return true;
 });

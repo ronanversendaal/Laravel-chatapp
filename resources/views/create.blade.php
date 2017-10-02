@@ -57,8 +57,7 @@
                             </fieldset>
                         </form>
                     </div>
-                    <div class="panel-footer ">
-                        Some extra information? <a href="#" onClick=""> Click Here </a>
+                    <div class="panel-footer ">Already have a chat? <a href="#" onClick=""> Resume chat</a> <a class="pull-right" href="{{route('login')}}"> Login</a>
                     </div>
                 </div>
             </div>

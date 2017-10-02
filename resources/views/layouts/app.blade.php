@@ -213,7 +213,6 @@ body {
   font-size: 13px;
   font-weight: 600;
   padding: 18px 10px;
-  min-width: 75vw;
   width: 100%;
   height : var(--new_message_head);
 }
@@ -226,11 +225,9 @@ body {
 .chat_area {
       float: left;
     min-height: 300px;
-    /*overflow-x: hidden;*/
     overflow-y: auto;
     width: 100%;
-    height: 65vh;
-    max-height: 65vh;
+    max-height: 75vh;
     min-width: 75vw;
 }
 

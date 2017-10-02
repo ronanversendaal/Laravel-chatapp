@@ -1,6 +1,6 @@
 <template>
 <div class="message_write">
-    <textarea class="form-control" placeholder="type a message" v-model="newMessage" @keyup="enterHandler"></textarea>
+    <textarea class="form-control" placeholder="type a message" v-model="newMessage" @keydown="enterHandler"></textarea>
     <div class="clearfix"></div>
     <div class="chat_bottom">
         <a href="#" class="pull-left upload_btn"><i class="fa fa-cloud-upload" aria-hidden="true"></i>Add Files</a>
@@ -11,11 +11,10 @@
 
 <script>
     export default {
-        props: ['user'],
+        props: ['user', 'thread'],
 
         data() {
             return {
-                thread : {},
                 newMessage: ''
             }
         },
@@ -40,6 +39,7 @@
             sendMessageToThread() {
                 // Checks if the first characters are not linebreaks.
                 if(this.newMessage.match(/[a-zA-Z0-9!@#$&()\\-`.+,/\"]+$/gm)){
+                console.log('emit!', this.thread, this.user, this.newMessage);
                     this.$emit('messagesent', {
                         thread : this.thread.id,
                         user: this.user,

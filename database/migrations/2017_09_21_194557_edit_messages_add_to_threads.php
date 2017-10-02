@@ -14,7 +14,7 @@ class EditMessagesAddToThreads extends Migration
     public function up()
     {
         Schema::table('messages', function (Blueprint $table) {
-          $table->integer('thread_id')->nullable()->unsigned();
+            $table->integer('thread_id')->nullable()->unsigned();
         });
     }
 
@@ -26,7 +26,7 @@ class EditMessagesAddToThreads extends Migration
     public function down()
     {
         Schema::table('messages', function (Blueprint $table) {
-          $table->removeColumn('thread_id');
+            $table->removeColumn('thread_id');
         });
     }
 }

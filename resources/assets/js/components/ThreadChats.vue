@@ -1,5 +1,5 @@
 <template>
-    <ul class="list-unstyled">
+    <ul v-if="isVisible(display)" class="list-unstyled">
         <li @click="loadThread(thread)" v-for="thread, index in orderedThreads" class="left clearfix">
 
             <span class="chat-img1">
@@ -23,6 +23,8 @@
 <script>
   export default {
 
+    props : ['display', 'thread'],
+
     data () {
         return {
             threads : [],
@@ -37,9 +39,12 @@
     },
 
     created() {
-        this.startRoom();
+        this.startRoom(this.thread);
     },
     methods : {
+        isVisible(display){
+            return display;
+        },
         getMessagesForThread(thread) {
             axios.get('/threads/'+thread.id+'/messages').then(response => {
                 this.setCurrentMessages(response.data);
@@ -67,8 +72,9 @@
 
             // Pass the dynamic chatroom name here
             // @todo what if we cant connect? Show a message?
-            Echo.private('chat.' + this.currentThread.chatroom)
+            Echo.channel('chat.' + this.currentThread.chatroom)
                 .listen('MessageSentToThread', (e) => {
+                    console.log('listen - emit!');
                     this.eventHub.$emit('message-add', e);
                 });
         },
@@ -88,7 +94,13 @@
                 reject();
             })
         },
-        startRoom(){
+        startRoom(thread){
+
+            if(thread){
+                this.loadThread(thread);
+                return;
+            }
+
             this.getThreads().then(response => {
                 this.setThreads(response.data).then(threads => {
 

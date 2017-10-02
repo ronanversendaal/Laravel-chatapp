@@ -28,7 +28,7 @@ class MessageSentToThread implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(User $user, Message $message, Thread $thread)
+    public function __construct(User $user = null, Message $message, Thread $thread)
     {
         $this->user = $user;
         $this->message = $message;
@@ -42,6 +42,6 @@ class MessageSentToThread implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('chat.'.$this->thread->chatroom);
+        return new Channel('chat.'.$this->thread->chatroom);
     }
 }

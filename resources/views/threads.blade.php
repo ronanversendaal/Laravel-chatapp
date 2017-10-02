@@ -3,16 +3,16 @@
 @section('content')
 
 <div class="main_section">
-  <div class="chat_container">
-     <div class="col-sm-3 chat_sidebar">
-     <div class="row">
-        <div id="custom-search-input">
-           <div class="input-group col-md-12">
-              <input type="text" class="  search-query form-control" placeholder="Conversation" />
-              <button class="btn btn-danger" type="button">
-              <span class=" glyphicon glyphicon-search"></span>
-              </button>
-           </div>
+  <div class="col-sm-3 chat_container">
+     <div class="chat_sidebar">
+       <div class="row">
+          <div id="custom-search-input">
+             <div class="input-group col-md-12">
+                <input type="text" class="  search-query form-control" placeholder="Conversation" />
+                <button class="btn btn-danger" type="button">
+                <span class=" glyphicon glyphicon-search"></span>
+                </button>
+             </div>
         </div>
         <div class="dropdown all_conversation">
            <button class="dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -34,7 +34,7 @@
               </ul>
            </div>
            <div class="member_list">
-              <thread-chats :threads="threads"></thread-chats>
+              <thread-chats :display="true" :threads="threads"></thread-chats>
            </div>
         </div>
      </div>

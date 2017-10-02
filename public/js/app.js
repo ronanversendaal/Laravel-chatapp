@@ -47076,6 +47076,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+
+    props: ['display', 'thread'],
+
     data: function data() {
         return {
             threads: [],
@@ -47091,10 +47094,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     created: function created() {
-        this.startRoom();
+        this.startRoom(this.thread);
     },
 
     methods: {
+        isVisible: function isVisible(display) {
+            return display;
+        },
         getMessagesForThread: function getMessagesForThread(thread) {
             var _this = this;
 
@@ -47126,7 +47132,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             // Pass the dynamic chatroom name here
             // @todo what if we cant connect? Show a message?
-            Echo.private('chat.' + this.currentThread.chatroom).listen('MessageSentToThread', function (e) {
+            Echo.channel('chat.' + this.currentThread.chatroom).listen('MessageSentToThread', function (e) {
+                console.log('listen - emit!');
                 _this2.eventHub.$emit('message-add', e);
             });
         },
@@ -47146,8 +47153,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 reject();
             });
         },
-        startRoom: function startRoom() {
+        startRoom: function startRoom(thread) {
             var _this3 = this;
+
+            if (thread) {
+                this.loadThread(thread);
+                return;
+            }
 
             this.getThreads().then(function (response) {
                 _this3.setThreads(response.data).then(function (threads) {
@@ -47177,50 +47189,54 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "ul",
-    { staticClass: "list-unstyled" },
-    _vm._l(_vm.orderedThreads, function(thread, index) {
-      return _c(
-        "li",
-        {
-          staticClass: "left clearfix",
-          on: {
-            click: function($event) {
-              _vm.loadThread(thread)
-            }
-          }
-        },
-        [
-          _c("span", { staticClass: "chat-img1" }, [
-            _c("div", { staticClass: "circle" }, [
-              _c("div", { staticClass: "initials" }, [
-                _vm._v(_vm._s(_vm.getUserInitials(thread)))
+  return _vm.isVisible(_vm.display)
+    ? _c(
+        "ul",
+        { staticClass: "list-unstyled" },
+        _vm._l(_vm.orderedThreads, function(thread, index) {
+          return _c(
+            "li",
+            {
+              staticClass: "left clearfix",
+              on: {
+                click: function($event) {
+                  _vm.loadThread(thread)
+                }
+              }
+            },
+            [
+              _c("span", { staticClass: "chat-img1" }, [
+                _c("div", { staticClass: "circle" }, [
+                  _c("div", { staticClass: "initials" }, [
+                    _vm._v(_vm._s(_vm.getUserInitials(thread)))
+                  ])
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "chat-body clearfix" }, [
+                _c("div", { staticClass: "header_sec" }, [
+                  _c("strong", { staticClass: "primary-font" }, [
+                    _vm._v(_vm._s(thread.subject))
+                  ]),
+                  _vm._v(" "),
+                  _c("strong", { staticClass: "pull-right" }, [
+                    _vm._v("09:45AM")
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "contact_sec" }, [
+                  _c("strong", { staticClass: "primary-font" }, [
+                    _vm._v(_vm._s(_vm.lastMessage(index)))
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "badge pull-right" }, [_vm._v("3")])
+                ])
               ])
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "chat-body clearfix" }, [
-            _c("div", { staticClass: "header_sec" }, [
-              _c("strong", { staticClass: "primary-font" }, [
-                _vm._v(_vm._s(thread.subject))
-              ]),
-              _vm._v(" "),
-              _c("strong", { staticClass: "pull-right" }, [_vm._v("09:45AM")])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "contact_sec" }, [
-              _c("strong", { staticClass: "primary-font" }, [
-                _vm._v(_vm._s(_vm.lastMessage(index)))
-              ]),
-              _vm._v(" "),
-              _c("span", { staticClass: "badge pull-right" }, [_vm._v("3")])
-            ])
-          ])
-        ]
+            ]
+          )
+        })
       )
-    })
-  )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -47328,10 +47344,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     methods: {
+
+        isUser: function isUser(user) {
+            if (user) {
+                return 'admin_chat';
+            } else {
+                return 'client_chat';
+            }
+        },
         setCurrentMessages: function setCurrentMessages(messages) {
             this.currentMessages = messages;
         },
         getUserInitials: function getUserInitials(thread) {
+            console.log(thread);
+            if (!thread) {
+                return "?";
+            }
             var names = thread.name.split(' '),
                 initials = names[0].substring(0, 1).toUpperCase();
 
@@ -47364,10 +47392,7 @@ var render = function() {
     _vm._l(_vm.currentMessages, function(message) {
       return _c(
         "li",
-        {
-          staticClass: "clearfix",
-          class: { admin_chat: _vm.fromCurrentUser(message.user) }
-        },
+        { staticClass: "clearfix", class: _vm.isUser(message.user) },
         [
           _c("span", { staticClass: "chat-img1" }, [
             _c("div", { staticClass: "circle" }, [
@@ -47381,7 +47406,7 @@ var render = function() {
             _c("p", [_vm._v(_vm._s(message.message))]),
             _vm._v(" "),
             _c("div", { staticClass: "chat_time pull-right" }, [
-              _vm._v("09:40PM")
+              _vm._v(_vm._s(message.created_at))
             ])
           ])
         ]
@@ -47464,11 +47489,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['user'],
+    props: ['user', 'thread'],
 
     data: function data() {
         return {
-            thread: {},
             newMessage: ''
         };
     },
@@ -47493,6 +47517,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         sendMessageToThread: function sendMessageToThread() {
             // Checks if the first characters are not linebreaks.
             if (this.newMessage.match(/[a-zA-Z0-9!@#$&()\\-`.+,/\"]+$/gm)) {
+                console.log('emit!', this.thread, this.user, this.newMessage);
                 this.$emit('messagesent', {
                     thread: this.thread.id,
                     user: this.user,
@@ -47526,7 +47551,7 @@ var render = function() {
       attrs: { placeholder: "type a message" },
       domProps: { value: _vm.newMessage },
       on: {
-        keyup: _vm.enterHandler,
+        keydown: _vm.enterHandler,
         input: function($event) {
           if ($event.target.composing) {
             return

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageSentToThread;
 use App\Http\Requests\ThreadCreateRequest;
+use App\Message;
 use App\Thread;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,14 +13,14 @@ class ThreadsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth-admin')->except(['store', 'show']);
+        $this->middleware('auth-admin')->except(['store', 'show', 'sendMessage']);
     }
 
     /**
      * Return an overview of all threads and messages.
      *
      * Like a chat index
-     * 
+     *
      * @return Response
      */
     public function index()
@@ -29,7 +30,7 @@ class ThreadsController extends Controller
 
     public function getThreads()
     {
-        return Thread::with('messages')->get();        
+        return Thread::with('messages')->get();
     }
 
     /**
@@ -38,8 +39,9 @@ class ThreadsController extends Controller
      */
     public function show(Thread $thread)
     {
+        $messages = Message::with(['user'])->whereThreadId($thread->id)->get();
 
-        return view('chat', ['thread' => $thread, 'messages' => $thread->messages]);
+        return view('chat', ['thread' => $thread, 'messages' => $messages]);
     }
 
     /**
@@ -54,17 +56,14 @@ class ThreadsController extends Controller
             'subject', 'name', 'emailaddress'
         ]));
 
-        try{
+        try {
             $thread = Thread::create($thread);
-
-            return redirect()->route('thread.show', $thread);
-        } catch (\Exception $e){
-            // @todo If room already exists we should do something.
-            
-            return redirect('/');
+            // If room already exists we should do something.
+        } catch (\Exception $e) {
+            $thread = Thread::where(['chatroom' => $thread['chatroom']])->first();
         }
 
-
+        return redirect()->route('thread.show', $thread);
     }
     /**
      * @param  Request $request
@@ -72,15 +71,22 @@ class ThreadsController extends Controller
      */
     public function sendMessage(Request $request)
     {
-        $user = Auth::user();
+        try {
 
-        try{
             $thread = Thread::findOrFail($request->input('thread'));
 
-            $message = $thread->messages()->create([
+
+            $user = Auth::user();
+
+            $message = [
                 'message' => $request->input('message'),
-                'user_id' => $user->id
-            ]);
+            ];
+
+            if($user){
+                $message['user_id'] = $user->id;
+            }
+
+            $message = $thread->messages()->create($message);
 
             // Broadcast the message
             broadcast(new MessageSentToThread($user, $message, $thread));
