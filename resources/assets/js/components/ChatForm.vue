@@ -20,6 +20,8 @@
         },
 
         created(){
+            this.setCurrentThread(this.thread);
+
             this.eventHub.$on('switch-thread', thread => {
                 this.setCurrentThread(thread);
             });
@@ -29,23 +31,23 @@
 
             enterHandler(e){
                 if (e.keyCode === 13 && !e.shiftKey) {
-                    this.sendMessageToThread();
+                    this.sendMessageToThread(e);
                 }
             },
 
             setCurrentThread(thread){
-                this.thread = thread;
+                this.currentThread = thread;
             },
-            sendMessageToThread() {
+            sendMessageToThread(e) {
+                e.preventDefault();
                 // Checks if the first characters are not linebreaks.
                 if(this.newMessage.match(/[a-zA-Z0-9!@#$&()\\-`.+,/\"]+$/gm)){
-                console.log('emit!', this.thread, this.user, this.newMessage);
                     this.$emit('messagesent', {
-                        thread : this.thread.id,
+                        thread : this.currentThread.id,
                         user: this.user,
                         message: this.newMessage
                     });
-                    this.newMessage = '';   
+                    this.newMessage = '';
                 }
             }
         }    

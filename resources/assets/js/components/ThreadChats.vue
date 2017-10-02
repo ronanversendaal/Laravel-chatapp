@@ -12,7 +12,7 @@
                     <strong class="primary-font">{{ thread.subject }}</strong> <strong class="pull-right">09:45AM</strong>
                 </div>
                 <div class="contact_sec">
-                   <strong class="primary-font">{{lastMessage(index)}}</strong>
+                   <strong class="primary-font">{{messagePreview(lastMessage(index), 25)}}</strong>
                    <span class="badge pull-right">3</span>
                 </div>
             </div>
@@ -42,6 +42,12 @@
         this.startRoom(this.thread);
     },
     methods : {
+        messagePreview : function(message, limit){
+            if(message.length > limit) {
+                message = message.substring(0, (limit - 1))+"...";
+            }
+            return message;
+        },
         isVisible(display){
             return display;
         },
@@ -74,7 +80,6 @@
             // @todo what if we cant connect? Show a message?
             Echo.channel('chat.' + this.currentThread.chatroom)
                 .listen('MessageSentToThread', (e) => {
-                    console.log('listen - emit!');
                     this.eventHub.$emit('message-add', e);
                 });
         },

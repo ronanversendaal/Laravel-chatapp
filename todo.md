@@ -6,5 +6,6 @@
  X - Create overview of threads and their messages.
  X - Create chat for public users.
  X - Create functionality for public chat ( No authentication )
- - Refactoring
- - Other rules.
+ X - Refactoring
+ X - Chatbox
+ - Auth based on code ( which would be sent in mail )? -- Implementation

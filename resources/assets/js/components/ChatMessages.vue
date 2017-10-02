@@ -7,7 +7,7 @@
             </div>
         </span>
         <div class="chat-body1 clearfix">
-            <p>{{ message.message }}</p>
+            <p style="white-space: pre-wrap;">{{ message.message }}</p>
             <div class="chat_time pull-right">{{ message.created_at }}</div>
         </div>
     </li>        
@@ -52,7 +52,6 @@
             this.currentMessages = messages;
         },
         getUserInitials(thread){
-            console.log(thread);
             if(!thread){
                 return "?";
             }
@@ -63,12 +62,6 @@
                 initials += names[names.length - 1].substring(0, 1).toUpperCase();
             }
             return initials;
-        },
-        fromCurrentUser: function (user) {
-            if(!user){
-                return false;
-            }
-            return user.id === this.user.id;
         }
     }
   };

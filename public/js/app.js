@@ -47098,6 +47098,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     methods: {
+        messagePreview: function messagePreview(message, limit) {
+            if (message.length > limit) {
+                message = message.substring(0, limit - 1) + "...";
+            }
+            return message;
+        },
         isVisible: function isVisible(display) {
             return display;
         },
@@ -47133,7 +47139,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Pass the dynamic chatroom name here
             // @todo what if we cant connect? Show a message?
             Echo.channel('chat.' + this.currentThread.chatroom).listen('MessageSentToThread', function (e) {
-                console.log('listen - emit!');
                 _this2.eventHub.$emit('message-add', e);
             });
         },
@@ -47226,7 +47231,9 @@ var render = function() {
                 _vm._v(" "),
                 _c("div", { staticClass: "contact_sec" }, [
                   _c("strong", { staticClass: "primary-font" }, [
-                    _vm._v(_vm._s(_vm.lastMessage(index)))
+                    _vm._v(
+                      _vm._s(_vm.messagePreview(_vm.lastMessage(index), 25))
+                    )
                   ]),
                   _vm._v(" "),
                   _c("span", { staticClass: "badge pull-right" }, [_vm._v("3")])
@@ -47356,7 +47363,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.currentMessages = messages;
         },
         getUserInitials: function getUserInitials(thread) {
-            console.log(thread);
             if (!thread) {
                 return "?";
             }
@@ -47367,13 +47373,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 initials += names[names.length - 1].substring(0, 1).toUpperCase();
             }
             return initials;
-        },
-
-        fromCurrentUser: function fromCurrentUser(user) {
-            if (!user) {
-                return false;
-            }
-            return user.id === this.user.id;
         }
     }
 });
@@ -47403,7 +47402,9 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "chat-body1 clearfix" }, [
-            _c("p", [_vm._v(_vm._s(message.message))]),
+            _c("p", { staticStyle: { "white-space": "pre-wrap" } }, [
+              _vm._v(_vm._s(message.message))
+            ]),
             _vm._v(" "),
             _c("div", { staticClass: "chat_time pull-right" }, [
               _vm._v(_vm._s(message.created_at))
@@ -47499,6 +47500,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     created: function created() {
         var _this = this;
 
+        this.setCurrentThread(this.thread);
+
         this.eventHub.$on('switch-thread', function (thread) {
             _this.setCurrentThread(thread);
         });
@@ -47508,18 +47511,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         enterHandler: function enterHandler(e) {
             if (e.keyCode === 13 && !e.shiftKey) {
-                this.sendMessageToThread();
+                this.sendMessageToThread(e);
             }
         },
         setCurrentThread: function setCurrentThread(thread) {
-            this.thread = thread;
+            this.currentThread = thread;
         },
-        sendMessageToThread: function sendMessageToThread() {
+        sendMessageToThread: function sendMessageToThread(e) {
+            e.preventDefault();
             // Checks if the first characters are not linebreaks.
             if (this.newMessage.match(/[a-zA-Z0-9!@#$&()\\-`.+,/\"]+$/gm)) {
-                console.log('emit!', this.thread, this.user, this.newMessage);
                 this.$emit('messagesent', {
-                    thread: this.thread.id,
+                    thread: this.currentThread.id,
                     user: this.user,
                     message: this.newMessage
                 });
