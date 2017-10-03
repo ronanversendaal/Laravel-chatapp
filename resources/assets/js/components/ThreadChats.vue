@@ -73,6 +73,9 @@
             return initials;
         },
         loadThread(thread){
+
+            Echo.channel('chat.' + this.currentThread.chatroom).stopListening('MessageSentToThread');
+
             this.setCurrentThread(thread);
             this.getMessagesForThread(thread);
 

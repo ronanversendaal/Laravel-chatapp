@@ -9,3 +9,4 @@
  X - Refactoring
  X - Chatbox
  - Auth based on code ( which would be sent in mail )? -- Implementation
+ - Functionality when new thread is created.

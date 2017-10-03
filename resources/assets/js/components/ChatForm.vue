@@ -41,14 +41,14 @@
             sendMessageToThread(e) {
                 e.preventDefault();
                 // Checks if the first characters are not linebreaks.
-                if(this.newMessage.match(/[a-zA-Z0-9!@#$&()\\-`.+,/\"]+$/gm)){
+                // if(this.newMessage.match(/[a-zA-Z0-9!?@#$&()\\-`.+,/\"]+$/gm)){
                     this.$emit('messagesent', {
                         thread : this.currentThread.id,
                         user: this.user,
                         message: this.newMessage
                     });
                     this.newMessage = '';
-                }
+                // }
             }
         }    
     }
