@@ -47344,7 +47344,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.eventHub.$on('message-add', function (e) {
             _this.currentMessages.push({
                 message: e.message.message,
-                user: e.user
+                user: e.user,
+                created_at: e.message.created_at
             });
         });
         this.eventHub.$on('switch-thread', function (thread) {
@@ -47408,7 +47409,7 @@ var render = function() {
               _vm._v(_vm._s(message.message))
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "chat_time pull-right" }, [
+            _c("div", { staticClass: "chat_time" }, [
               _vm._v(_vm._s(message.created_at))
             ])
           ])

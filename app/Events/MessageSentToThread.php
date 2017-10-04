@@ -28,7 +28,7 @@ class MessageSentToThread implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(User $user = null, Message $message, Thread $thread)
+    public function __construct(User $user = null, $message, Thread $thread)
     {
         $this->user = $user;
         $this->message = $message;

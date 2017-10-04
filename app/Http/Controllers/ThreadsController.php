@@ -2,10 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Bot\ChatBot;
 use App\Events\MessageSentToThread;
 use App\Http\Requests\ThreadCreateRequest;
 use App\Message;
 use App\Thread;
+use App\User;
+use BotMan\BotMan\BotMan;
+use BotMan\BotMan\BotManFactory;
+use BotMan\BotMan\Cache\DoctrineCache;
+use BotMan\BotMan\Cache\LaravelCache;
+use BotMan\BotMan\Drivers\DriverManager;
+use Doctrine\Common\Cache\FilesystemCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -92,6 +100,40 @@ class ThreadsController extends Controller
             broadcast(new MessageSentToThread($user, $message, $thread));
 
             $thread->touch();
+
+
+            if(!$user){
+
+                DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
+
+                $config = [];
+
+                $botman = BotManFactory::create($config, new LaravelCache(), $request);
+                // start listening
+                $botman->hears('test', function (BotMan $bot) use ($message, $thread) {
+
+
+                    $chatbot = User::find(ChatBot::USER_ID);
+
+                    $message = [
+                        'message' => 'Test yourself.',
+                        'user_id' => $chatbot->id
+                    ];
+
+                    $message = $thread->messages()->create($message);
+
+                    broadcast(new MessageSentToThread($chatbot, $message, $thread));
+
+                    $bot->reply($message->message);
+                });
+                $botman->fallback(function($bot) {
+                    $bot->reply('Sorry, I did not understand these commands. Here is a list of commands I understand: ...');
+                });
+            
+                $botman->listen();
+
+            }
+
 
             return ['status' => 'Message sent!'];
         } catch(Exception $e){

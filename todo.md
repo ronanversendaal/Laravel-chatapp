@@ -9,4 +9,5 @@
  X - Refactoring
  X - Chatbox
  - Auth based on code ( which would be sent in mail )? -- Implementation
- - Functionality when new thread is created.
+ - Functionality when new thread is created and new message is created (bold the last-message).
+ - Closing chats, blocking users ( email )

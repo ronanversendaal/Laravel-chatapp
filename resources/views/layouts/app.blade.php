@@ -256,11 +256,22 @@ body {
   margin-left: calc(var(--avatar-size) + 1%) ;
 }
 
+.chat-body1 .chat_time {
+  margin-left: calc(var(--avatar-size) + 1%) ;
+}
+
+.admin_chat .chat-body1 .chat_time {
+  float: right;
+}
 .chat_area li.admin_chat .chat-img1 {
     float: right;
 }
 .chat_area .admin_chat .chat-body1 {
   margin-right: calc(var(--avatar-size) + 1%);
+}
+
+.admin_chat .chat-body1 p {
+    text-align: right;
 }
 
 .chat_area li:last-child {

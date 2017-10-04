@@ -8,7 +8,7 @@
         </span>
         <div class="chat-body1 clearfix">
             <p style="white-space: pre-wrap;">{{ message.message }}</p>
-            <div class="chat_time pull-right">{{ message.created_at }}</div>
+            <div class="chat_time">{{ message.created_at }}</div>
         </div>
     </li>        
 </ul>
@@ -32,7 +32,8 @@
         this.eventHub.$on('message-add', e => {
             this.currentMessages.push({
               message: e.message.message,
-              user: e.user
+              user: e.user,
+              created_at : e.message.created_at
             });
         })
         this.eventHub.$on('switch-thread', thread => {
