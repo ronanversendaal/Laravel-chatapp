@@ -25,6 +25,11 @@ Route::get('/threads/{thread}', [
     'as' => 'thread.show',
     'uses' => 'ThreadsController@show'
 ]);
+Route::post('/threads/actions', [
+    'as' => 'thread.actions',
+    'uses' => 'ThreadsController@setAction'
+]);
+
 Route::post('/threads/create', [
     'as' => 'thread.create',
     'uses' => 'ThreadsController@store'

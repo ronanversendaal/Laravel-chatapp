@@ -1,17 +1,22 @@
 <template>
-<ul class="list-unstyled">
-    <li class="clearfix" :class="isUser(message.user)" v-for="message in currentMessages">
-        <span class="chat-img1">
-            <div class="circle">
-                <div class="initials">{{getUserInitials(message.user)}}</div>
+    <ul class="list-unstyled">
+        <li class="clearfix" :class="fromUser(message.user)" v-for="message in currentMessages">
+            <span class="chat-img1">
+                <div class="circle">
+                    <div v-if="isUser(message.user)">
+                        <div class="initials">{{getInitials(message.user)}}</div>
+                    </div>
+                    <div v-else>
+                        <div class="initials">{{getInitials(message.thread)}}</div>
+                    </div>
+                </div>
+            </span>
+            <div class="chat-body1 clearfix">
+                <p v-html="message.message"></p>
+                <div class="chat_time">{{ message.created_at }}</div>
             </div>
-        </span>
-        <div class="chat-body1 clearfix">
-            <p style="white-space: pre-wrap;">{{ message.message }}</p>
-            <div class="chat_time">{{ message.created_at }}</div>
-        </div>
-    </li>        
-</ul>
+        </li>
+    </ul>
 </template>
 
 <script>
@@ -42,17 +47,20 @@
     },
     methods : {
 
+        fromUser : function (user){
+            if(this.isUser(user)){ return 'admin_chat'; } 
+            return 'client_chat';
+        },
+
         isUser : function(user){
-            if(user){
-                return 'admin_chat';
-            } else {
-                return 'client_chat';
-            }
+            if(user){ return true; }
+            
+            return false;
         },
         setCurrentMessages(messages){
             this.currentMessages = messages;
         },
-        getUserInitials(thread){
+        getInitials(thread){
             if(!thread){
                 return "?";
             }

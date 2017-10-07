@@ -229,6 +229,7 @@ body {
     width: 100%;
     max-height: 75vh;
     min-width: 75vw;
+    height: 72vh;
 }
 
 .public .chat_area{
@@ -241,7 +242,7 @@ body {
 }
 
 .chat_area li {
-  padding: 14px 14px 0;
+  padding: 14px 2vw 0;
 }
 .chat_area li .chat-img1 img {
   height: 40px;
@@ -272,6 +273,14 @@ body {
 
 .admin_chat .chat-body1 p {
     text-align: right;
+}
+
+
+.chat-bubble p.typing {
+  background: #fbf9fa none repeat scroll 0 0;
+    padding: 14px 10px;
+    margin-right: calc(var(--avatar-size) + 3%);
+    float: right;
 }
 
 .chat_area li:last-child {

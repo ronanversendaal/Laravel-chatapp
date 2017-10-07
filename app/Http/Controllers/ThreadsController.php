@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Bot\ChatBot;
+use App\Bot\ChatBotFactory;
+use App\Bot\Conversations\Inquiry;
+use App\Bot\Drivers\RvChatDriver;
+use App\Events\ChatAction;
 use App\Events\MessageSentToThread;
 use App\Http\Requests\ThreadCreateRequest;
 use App\Message;
@@ -13,6 +17,8 @@ use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Cache\DoctrineCache;
 use BotMan\BotMan\Cache\LaravelCache;
 use BotMan\BotMan\Drivers\DriverManager;
+use BotMan\BotMan\Middleware\ApiAi;
+use BotMan\Drivers\Web\WebDriver;
 use Doctrine\Common\Cache\FilesystemCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +27,12 @@ class ThreadsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth-admin')->except(['store', 'show', 'sendMessage']);
+        $this->chatbot_driver = DriverManager::loadDriver(RvChatDriver::class);
+        $this->chatbot_config = [];
+        $this->cache = new LaravelCache();
+
+        $this->middleware('auth-admin')->only(['threads', 'getThreads']);
+        
     }
 
     /**
@@ -49,7 +60,17 @@ class ThreadsController extends Controller
     {
         $messages = Message::with(['user'])->whereThreadId($thread->id)->get();
 
-        return view('chat', ['thread' => $thread, 'messages' => $messages]);
+        if($messages->count() < 1){
+            // If there is no message, initiate one.
+
+            $chatbot = User::find(ChatBot::USER_ID);
+
+            $botman = ChatBotFactory::create($thread, $chatbot, $this->chatbot_config, $this->cache);
+
+            $botman->reply('Hi there! My name is Chatbot.');
+
+        }
+            return view('chat', ['thread' => $thread, 'messages' => $messages]);
     }
 
     /**
@@ -101,35 +122,40 @@ class ThreadsController extends Controller
 
             $thread->touch();
 
-
+            // @todo only if user isnt a bot
             if(!$user){
 
-                DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
+                // Activate bot
 
-                $config = [];
+                $apiAi = ApiAi::create(env('API_AI_TOKEN'))->listenForAction();
 
-                $botman = BotManFactory::create($config, new LaravelCache(), $request);
-                // start listening
-                $botman->hears('test', function (BotMan $bot) use ($message, $thread) {
+                $chatbot = User::find(ChatBot::USER_ID);
 
+                $botman = ChatBotFactory::create($thread, $chatbot, $this->chatbot_config, $this->cache, $request);
 
-                    $chatbot = User::find(ChatBot::USER_ID);
+                $botman->middleware->received($apiAi);
 
-                    $message = [
-                        'message' => 'Test yourself.',
-                        'user_id' => $chatbot->id
-                    ];
+                $botman->hears('input.*', function (ChatBot $bot) {
+                    // Retrieve API.ai information:
+                    $extras = $bot->getMessage()->getExtras();
+                    $bot->reply($extras['apiReply']);
 
-                    $message = $thread->messages()->create($message);
+                    $bot->startConversation(new Inquiry($extras));
+                })
+                ->middleware($apiAi);
 
-                    broadcast(new MessageSentToThread($chatbot, $message, $thread));
+                $botman->hears('smalltalk.*', function (ChatBot $bot) {
+                    $extras = $bot->getMessage()->getExtras();
+                    $bot->reply($extras['apiReply']);
+                })
+                ->middleware($apiAi);
 
-                    $bot->reply($message->message);
-                });
-                $botman->fallback(function($bot) {
-                    $bot->reply('Sorry, I did not understand these commands. Here is a list of commands I understand: ...');
-                });
-            
+                $botman->hears('fallback', function (ChatBot $bot) {
+                    $extras = $bot->getMessage()->getExtras();
+                    $bot->reply($extras['apiReply']);
+                })
+                ->middleware($apiAi);
+
                 $botman->listen();
 
             }
@@ -140,5 +166,16 @@ class ThreadsController extends Controller
             return ['status' => 'Message not sent!'];
         }
 
+    }
+
+
+    public function setAction(Request $request)
+    {
+        $thread = Thread::find($request->get('thread_id'));
+
+        $user = User::find($request->get('user_id'));
+
+        // Broadcast the message
+        broadcast(new ChatAction($user, $request->get('action'), $thread));
     }
 }

@@ -75,6 +75,7 @@
         loadThread(thread){
 
             Echo.channel('chat.' + this.currentThread.chatroom).stopListening('MessageSentToThread');
+            Echo.channel('chat.' + this.currentThread.chatroom).stopListening('ChatAction');
 
             this.setCurrentThread(thread);
             this.getMessagesForThread(thread);
@@ -84,7 +85,10 @@
             Echo.channel('chat.' + this.currentThread.chatroom)
                 .listen('MessageSentToThread', (e) => {
                     this.eventHub.$emit('message-add', e);
-                });
+                })
+                .listen('ChatAction', (e) => {
+                    this.eventHub.$emit('chat-action', e);
+                })
         },
         getThreads() {
             return axios.get('/threads/messages');

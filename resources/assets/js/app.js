@@ -14,6 +14,7 @@ Vue.use(require('vue-chat-scroll'))
 Vue.component('thread-chats', require('./components/ThreadChats.vue'));
 Vue.component('chat-messages', require('./components/ChatMessages.vue'));
 Vue.component('chat-form', require('./components/ChatForm.vue'));
+Vue.component('chat-bubble', require('./components/ChatBubble.vue'));
 
 const eventHub = new Vue() // Single event hub for emitting data across components.
 

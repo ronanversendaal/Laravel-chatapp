@@ -2,33 +2,37 @@
 
 namespace App\Events;
 
+use App\Thread;
 use App\User;
-use App\Message;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcast
+class ChatAction implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user;
 
-    public $message;
+    public $action;
+
+    public $thread;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(User $user, Message $message)
+    public function __construct(User $user = null, $action, Thread $thread)
     {
         $this->user = $user;
-        $this->message = $message;
+        $this->action = $action;
+        $this->thread = $thread;
+
     }
 
     /**
@@ -38,6 +42,6 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('chat');
+        return new Channel('chat.'.$this->thread->chatroom);
     }
 }

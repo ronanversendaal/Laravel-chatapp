@@ -37,9 +37,11 @@
 
                  <thread-chats :display="false" :thread="{{$thread}}"></thread-chats>
 
-                 <div class="chat_area" v-chat-scroll="{always: false}">
+                 <div class="chat_area" v-chat-scroll>
                     <chat-messages :messages="{{ $messages }}"></chat-messages>
-                 </div><!--chat_area-->
+                 </div>
+                 <chat-bubble></chat-bubble>
+                 <!--chat_area-->
                     <chat-form :thread="{{$thread}}"
                         v-on:messagesent="addMessageToThread"
                     ></chat-form>
