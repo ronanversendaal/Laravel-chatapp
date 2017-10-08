@@ -10,7 +10,7 @@
                         <strong>Fill the form to continue</strong>
                     </div>
                     <div class="panel-body">
-                        <form role="form" action="{{route('thread.create')}}" method="POST">
+                        <form role="form" action="{{route('thread.resume.post')}}" method="POST">
                             {{csrf_field()}}
                             <fieldset>
                                 <div class="row">
@@ -28,25 +28,17 @@
                                         <div class="form-group">
                                             <div class="input-group">
                                                 <span class="input-group-addon">
-                                                    <i class="glyphicon glyphicon-user"></i>
-                                                </span> 
-                                                <input class="form-control" placeholder="Your name" name="name" type="text" autofocus>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">
                                                     <i class="glyphicon glyphicon-envelope"></i>
                                                 </span> 
-                                                <input class="form-control" placeholder="Emailaddress" name="emailaddress" type="text">
+                                                <input class="form-control" placeholder="Emailaddress" name="emailaddress" type="text" autofocus>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="input-group">
                                                 <span class="input-group-addon">
-                                                    <i class="glyphicon glyphicon-lock"></i>
-                                                </span>
-                                                <input class="form-control" placeholder="Subject" name="subject" type="text" value="">
+                                                    <i class="glyphicon glyphicon-user"></i>
+                                                </span> 
+                                                <input class="form-control" placeholder="Your personal code" name="code">
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -57,7 +49,7 @@
                             </fieldset>
                         </form>
                     </div>
-                    <div class="panel-footer ">Already have a chat? <a href="{{route('thread.resume')}}"> Resume chat</a> <a class="pull-right" href="{{route('login')}}"> Login</a>
+                    <div class="panel-footer ">Dont have a chat? <a href="{{route('index')}}"> Create chat</a> <a class="pull-right" href="{{route('login')}}"> Login</a>
                     </div>
                 </div>
             </div>

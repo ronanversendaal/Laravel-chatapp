@@ -1,6 +1,6 @@
 <template>
     <ul class="list-unstyled">
-        <li class="clearfix" :class="fromUser(message.user)" v-for="message in currentMessages">
+        <li class="clearfix" :class="isFromCurrentUser(message)" v-for="message in currentMessages">
             <span class="chat-img1">
                 <div class="circle">
                     <div v-if="isUser(message.user)">
@@ -47,9 +47,27 @@
     },
     methods : {
 
-        fromUser : function (user){
-            if(this.isUser(user)){ return 'admin_chat'; } 
-            return 'client_chat';
+        isFromCurrentUser(message){
+
+            // determines class based on logged in user, current person, and other participants.
+
+            var message_class = 'admin_chat';        
+
+            if(typeof this.user !== "undefined"){
+
+                if((message.user_id == null) || (this.user.id !== message.user_id)){
+                    message_class =  'client_chat';
+                }
+            } else if(message.user_id != null){
+                message_class = 'client_chat';
+            }
+
+            if(typeof message.id === 'undefined'){
+                //This calse handles new messages which dont have an id yet.
+                message_class = 'admin_chat';
+            }
+
+            return message_class;
         },
 
         isUser : function(user){

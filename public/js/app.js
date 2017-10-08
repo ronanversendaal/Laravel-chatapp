@@ -47363,13 +47363,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     methods: {
+        isFromCurrentUser: function isFromCurrentUser(message) {
 
-        fromUser: function fromUser(user) {
-            if (this.isUser(user)) {
-                return 'admin_chat';
+            // determines class based on logged in user, current person, and other participants.
+
+            var message_class = 'admin_chat';
+
+            if (typeof this.user !== "undefined") {
+
+                if (message.user_id == null || this.user.id !== message.user_id) {
+                    message_class = 'client_chat';
+                }
+            } else if (message.user_id != null) {
+                message_class = 'client_chat';
             }
-            return 'client_chat';
+
+            if (typeof message.id === 'undefined') {
+                //This calse handles new messages which dont have an id yet.
+                message_class = 'admin_chat';
+            }
+
+            return message_class;
         },
+
 
         isUser: function isUser(user) {
             if (user) {
@@ -47410,7 +47426,7 @@ var render = function() {
     _vm._l(_vm.currentMessages, function(message) {
       return _c(
         "li",
-        { staticClass: "clearfix", class: _vm.fromUser(message.user) },
+        { staticClass: "clearfix", class: _vm.isFromCurrentUser(message) },
         [
           _c("span", { staticClass: "chat-img1" }, [
             _c("div", { staticClass: "circle" }, [

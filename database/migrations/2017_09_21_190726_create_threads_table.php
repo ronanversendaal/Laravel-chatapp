@@ -16,6 +16,7 @@ class CreateThreadsTable extends Migration
         Schema::create('threads', function (Blueprint $table) {
             $table->increments('id');
             $table->string('subject');
+            $table->string('emailaddress');
             $table->string('name');
             $table->string('chatroom');
             $table->unique(['subject', 'name', 'chatroom']);
