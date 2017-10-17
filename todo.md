@@ -16,7 +16,7 @@
     - Integrate Key features for/per implementation
     - Toggle switch per thread to turn bot on/off
     - Hulp secties ( Key features list )
- - Auth based on code ( which would be sent in mail / Doorman )? -- Implementation
+ X - Auth based on code ( which would be sent in mail / Doorman )? -- Implementation
  - Functionality when new thread is created and new message is created (bold the last-message, refresh chat list or array shifting).
  - Closing chats, blocking users ( email )
 
