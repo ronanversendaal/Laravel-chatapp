@@ -20,14 +20,20 @@ class RvChatDriver extends WebDriver
     public function typing(IncomingMessage $message, User $user)
     {
 
-        $parameters = [
-            'thread_id' => $message->getPayload()['thread'],
-            'action' => 'typing',
-            'user_id' => $user->id
-        ];
+        try{
 
-        // Move this to an api route to prevent crsf token hassle
-        $this->http->post(route('thread.actions'), [], $parameters);
+            $parameters = [
+                'thread_id' => $message->getPayload()['thread'],
+                'action' => 'typing',
+                'user_id' => $user->id
+            ];
+
+            // Move this to an api route to prevent crsf token hassle
+            $this->http->post(route('thread.actions'), [], $parameters);
+
+        } catch (\Exception $e) {
+            throw $e;
+        }
 
     }
 
