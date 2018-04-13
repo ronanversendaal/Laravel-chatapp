@@ -7,7 +7,7 @@ use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 
 class ChatBot extends BotMan{
 
-    const USER_ID = 3;
+    const USER_ID = 1;
 
     protected $thread;
 
