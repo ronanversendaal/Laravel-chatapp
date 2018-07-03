@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * 
+ * @author Ronan Versendaal <ronanversendaal@hotmail.com>
+ * 
+ */
 namespace App\Events;
 
 use App\Message;
@@ -25,6 +30,10 @@ class MessageSentToThread implements ShouldBroadcast
 
     /**
      * Create a new event instance.
+     * 
+     * @param User   $user    The current user
+     * @param string $message The message to be broadcasted.
+     * @param Thread $thread  The thread to be broadcasted on
      *
      * @return void
      */

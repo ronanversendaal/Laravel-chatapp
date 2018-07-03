@@ -1,4 +1,12 @@
-<?php namespace App\Bot;
+<?php 
+
+/**
+ * 
+ * @author Ronan Versendaal <ronanversendaal@hotmail.com>
+ * 
+ */
+
+namespace App\Bot;
 
 use App\Events\MessageSentToThread;
 use BotMan\BotMan\BotMan;
@@ -10,22 +18,24 @@ class ChatBot extends BotMan{
     const USER_ID = 1;
 
     protected $thread;
+    private $_cache;
 
-    /** @var CacheInterface */
-    private $cache;
-
-    /**
-     * [__construct description]
-     * @param [type] $thread [description]
-     */
-    public function __construct($thread, $user, $cache, $driver, $config, $storage)
+    public function __construct($thread, $user, $_cache, $driver, $config, $storage)
     {
         $this->thread = $thread;
         $this->user = $user;
 
-        parent::__construct($cache, $driver, $config, $storage);
+        parent::__construct($_cache, $driver, $config, $storage);
     }
 
+    /**
+     * Adds payload to message
+     * 
+     * @param string $key 
+     * @param string $value 
+     * 
+     * @return void
+     */
     public function addToMessagePayload($key, $value)
     {
         $this->getDriver()->addPayload($key, $value);
@@ -33,7 +43,8 @@ class ChatBot extends BotMan{
 
     /**
      * @param int $seconds Number of seconds to wait
-     * @return $this
+     * 
+     * @return ChatBot
      */
     public function typesAndWaits($seconds)
     {
@@ -44,6 +55,10 @@ class ChatBot extends BotMan{
         return $this;
     }
 
+    /**
+     * 
+     * @return ChatBot
+     */
     public function stopTyping()
     {
         $this->getDriver()->stopTyping($this->message, $this->user);
@@ -52,10 +67,13 @@ class ChatBot extends BotMan{
     }
 
     /**
-     * [reply description]
-     * @param  [type] $message              [description]
-     * @param  array  $additionalParameters [description]
-     * @return [type]                       [description]
+     * Broadcasts a message from the Chatbot.
+     * 
+     * @param string $message              The message to be sent
+     * @param array  $additionalParameters Data to be used as payload 
+     *                                     for the message
+     * 
+     * @return void
      */
     public function reply($message, $additionalParameters = [])
     {

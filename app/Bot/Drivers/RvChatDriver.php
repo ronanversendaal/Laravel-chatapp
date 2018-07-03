@@ -1,8 +1,16 @@
 <?php
 
+/**
+ * 
+ * @author Ronan Versendaal <ronanversendaal@hotmail.com>
+ * 
+ */
+
 namespace App\Bot\Drivers;
 
 use App\User;
+use App\Bot\ChatBotFactory;
+use App\Bot\ChatBot;
 use BotMan\BotMan\Drivers\HttpDriver;
 use BotMan\BotMan\Interfaces\WebAccess;
 use BotMan\BotMan\Messages\Incoming\Answer;
@@ -17,6 +25,14 @@ use Symfony\Component\HttpFoundation\Response;
 class RvChatDriver extends WebDriver
 {
 
+    /**
+     * Handle for the 'typing' action. Sends a request
+     * 
+     * @param IncomingMessage $message The message request with action payload.
+     * @param User            $user    The user for which the action was initiated
+     * 
+     * @return void
+     */
     public function typing(IncomingMessage $message, User $user)
     {
 
@@ -37,6 +53,14 @@ class RvChatDriver extends WebDriver
 
     }
 
+    /**
+     * Handle for the 'stop_typing' action. Sends a request
+     * 
+     * @param IncomingMessage $message The message request with action payload.
+     * @param User            $user    The user for which the action was initiated
+     * 
+     * @return void
+     */
     public function stopTyping(IncomingMessage $message, User $user)
     {
 

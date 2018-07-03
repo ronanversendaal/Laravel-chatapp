@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * 
+ * @author Ronan Versendaal <ronanversendaal@hotmail.com>
+ * 
+ */
+
 namespace App\Events;
 
 use App\Thread;
@@ -24,6 +30,10 @@ class ChatAction implements ShouldBroadcast
 
     /**
      * Create a new event instance.
+     * 
+     * @param User   $user   The current user
+     * @param string $action The action to be broadcasted.
+     * @param Thread $thread The thread to be broadcasted on
      *
      * @return void
      */
